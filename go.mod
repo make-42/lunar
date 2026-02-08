@@ -1,6 +1,6 @@
 module lunar
 
-go 1.25.6
+go 1.25.5
 
 require (
 	github.com/fogleman/gg v1.3.0
