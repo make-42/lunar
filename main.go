@@ -88,5 +88,5 @@ func main() {
 		dc.Fill()
 		dc.SavePNG(outPath)
 	}
-	fmt.Printf("∠ %0.2f°, θ %0.2f°", 180./math.Pi*mp.Altitude, 180./math.Pi*mp.Azimuth)
+	fmt.Printf("∠ %0.2f°, θ %0.2f°", 180./math.Pi*mp.Altitude, 180+180./math.Pi*mp.Azimuth)
 }
