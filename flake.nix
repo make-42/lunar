@@ -23,8 +23,8 @@
           src = pkgs.fetchFromGitHub {
             owner = "make-42";
             repo = "lunar";
-            rev = "458480b58d32e711f189ad562e96ffee30370d1f";
-            hash = "sha256-GPCEgnfJBOBXsyd2dpWdm9iifYwlwPt8zohIVDkNLO4=";
+            rev = "4fc52e1c26b89c237cf806a9daa9e7a9dba44fb0";
+            hash = "sha256-S81B2MjtP32EzKB7ekbmGF2E0rHGr0k3UwsMwD8tTG0=";
           };
 
           vendorHash = "sha256-fmI6T9JxxpaENU9KfOc1jdm0JlXxN71djuWVkCkK8O0=";
