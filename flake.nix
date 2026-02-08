@@ -2,7 +2,7 @@
   description = "lunar – quick script for drawing the moon from your position";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
   outputs = {
