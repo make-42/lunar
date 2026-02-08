@@ -31,7 +31,7 @@ var DefaultConfig = ConfigS{
 	Color:     "#FFFFFF",
 }
 
-var Config = DefaultConfig
+var Config = ConfigS{}
 
 var OutColor = color.RGBA{}
 

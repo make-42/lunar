@@ -28,9 +28,18 @@ func main() {
 	addHours := 0
 	outPath := ""
 	noOut := false
+	ignoreCfg := false
 	flag.IntVar(&addHours, "forecast", 0, "add hours to time")
 	flag.StringVar(&outPath, "out", "out.png", "output path")
 	flag.BoolVar(&noOut, "noout", false, "do not output image")
+	flag.BoolVar(&ignoreCfg, "ignorecfg", false, "ignorecfg")
+	flag.Float64Var(&config.Config.Lat, "lat", config.DefaultConfig.Lat, "user latitude")
+	flag.Float64Var(&config.Config.Lon, "lon", config.DefaultConfig.Lon, "user longitude")
+	flag.IntVar(&config.Config.ImageSize, "imagesize", config.DefaultConfig.ImageSize, "image size")
+	flag.Float64Var(&config.Config.MoonRad, "moonrad", config.DefaultConfig.MoonRad, "moon radius in pixels")
+	flag.Float64Var(&config.Config.LineWidth, "linewidth", config.DefaultConfig.LineWidth, "line width in pixels")
+	flag.IntVar(&config.Config.LineRes, "lineres", config.DefaultConfig.LineRes, "line res in steps")
+	flag.StringVar(&config.Config.Color, "color", config.DefaultConfig.Color, "draw color")
 	flag.Parse()
 
 	/*you can do stuff like
