@@ -22,7 +22,7 @@
 
             src = self;
 
-            vendorHash = "sha256-fmI6T9JxxpaENU9KfOc1jdm0JlXxN71djuWVkCkK8O0=";
+            vendorHash = null;
 
             ldflags = [ "-s" ];
 
