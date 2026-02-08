@@ -54,7 +54,7 @@ func ParseHexColor(s string) (c color.RGBA, err error) {
 }
 
 func Init() {
-	configPath := configdir.LocalConfig("ontake", "xyosc")
+	configPath := configdir.LocalConfig("ontake", "lunar")
 	err := configdir.MakePath(configPath) // Ensure it exists.
 	if err != nil {
 		log.Fatal(err)
