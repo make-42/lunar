@@ -34,7 +34,7 @@
           meta = {
             description = "Quick script for outputing realistic drawings of what the moon looks like from my position for a desktop widget";
             homepage = "https://github.com/make-42/lunar";
-            license = pkgs.lib.licenses.MIT;
+            license = pkgs.lib.licenses.mit;
             maintainers = with pkgs.lib.maintainers; [];
             mainProgram = "lunar";
           };
