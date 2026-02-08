@@ -5,50 +5,44 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-  }: let
-    systems = ["x86_64-linux" "aarch64-linux"];
-    forAllSystems = nixpkgs.lib.genAttrs systems;
-  in {
-    packages = forAllSystems (
-      system: let
-        pkgs = import nixpkgs {inherit system;};
-      in {
-        lunar = pkgs.buildGoModule (finalAttrs: {
-          pname = "lunar";
-          version = "0-unstable-2026-02-08";
+  outputs = { self, nixpkgs }:
+    let
+      systems = [ "x86_64-linux" "aarch64-linux" ];
+      forAllSystems = nixpkgs.lib.genAttrs systems;
+    in
+    {
+      packages = forAllSystems (system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+        in
+        {
+          lunar = pkgs.buildGoModule {
+            pname = "lunar";
+            version = "0-unstable";
 
-          src = pkgs.fetchFromGitHub {
-            owner = "make-42";
-            repo = "lunar";
-            rev = "9fae4940c33d9f98b8b2ecfa558dc75dd6707d62";
-            hash = "sha256-FR6rO6t1NNgNwyFR7njJ616FDYhUkwdYr3lCNpIW360=";
+            src = self;
+
+            vendorHash = "sha256-fmI6T9JxxpaENU9KfOc1jdm0JlXxN71djuWVkCkK8O0=";
+
+            ldflags = [ "-s" ];
+
+            meta = {
+              description = "Quick script for outputing realistic drawings of what the moon looks like from my position for a desktop widget";
+              homepage = "https://github.com/make-42/lunar";
+              license = pkgs.lib.licenses.mit;
+              mainProgram = "lunar";
+            };
           };
 
-          vendorHash = "sha256-fmI6T9JxxpaENU9KfOc1jdm0JlXxN71djuWVkCkK8O0=";
+          default = self.packages.${system}.lunar;
+        }
+      );
 
-          ldflags = ["-s"];
-
-          meta = {
-            description = "Quick script for outputing realistic drawings of what the moon looks like from my position for a desktop widget";
-            homepage = "https://github.com/make-42/lunar";
-            license = pkgs.lib.licenses.mit;
-            maintainers = with pkgs.lib.maintainers; [];
-            mainProgram = "lunar";
-          };
-        });
-
-        default = self.packages.${system}.lunar;
-      }
-    );
-
-    apps = forAllSystems (system: {
-      default = {
-        type = "app";
-        program = "${self.packages.${system}.lunar}/bin/lunar";
-      };
-    });
-  };
+      apps = forAllSystems (system: {
+        default = {
+          type = "app";
+          program = "${self.packages.${system}.lunar}/bin/lunar";
+        };
+      });
+    };
 }
