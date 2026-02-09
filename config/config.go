@@ -12,23 +12,29 @@ import (
 )
 
 type ConfigS struct {
-	Lat       float64
-	Lon       float64
-	ImageSize int
-	MoonRad   float64
-	LineWidth float64
-	LineRes   int
-	Color     string
+	Lat                float64
+	Lon                float64
+	ImageSize          int
+	MoonRad            float64
+	LineWidth          float64
+	LineRes            int
+	HorizonLine        bool
+	HorizonLineWidth   float64
+	HorizonLinePadding float64
+	Color              string
 }
 
 var DefaultConfig = ConfigS{
-	Lat:       48.8,
-	Lon:       2.3,
-	ImageSize: 1024,
-	MoonRad:   400,
-	LineWidth: 10.,
-	LineRes:   100,
-	Color:     "#FFFFFF",
+	Lat:                48.8,
+	Lon:                2.3,
+	ImageSize:          1024,
+	MoonRad:            400,
+	LineWidth:          10.,
+	LineRes:            100,
+	HorizonLine:        true,
+	HorizonLineWidth:   3.,
+	HorizonLinePadding: 10.,
+	Color:              "#FFFFFF",
 }
 
 var Config = ConfigS{}

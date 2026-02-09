@@ -12,6 +12,8 @@ import (
 	"lunar/config"
 )
 
+const moonRadius = 1737.4 // km
+
 func screenCoords(x, y, visAngle float64) (float64, float64) {
 	return float64(config.Config.ImageSize)/2 + config.Config.MoonRad*(math.Cos(visAngle)*x-math.Sin(visAngle)*y), float64(config.Config.ImageSize)/2 + config.Config.MoonRad*(math.Sin(visAngle)*x+math.Cos(visAngle)*y)
 }
@@ -25,11 +27,11 @@ func SignedAngleDiff(a, b float64) float64 {
 }
 
 func main() {
-	addHours := 0
+	addHours := 0.
 	outPath := ""
 	noOut := false
 	ignoreCfg := false
-	flag.IntVar(&addHours, "forecast", 0, "add hours to time")
+	flag.Float64Var(&addHours, "forecast", 0, "add hours to time")
 	flag.StringVar(&outPath, "out", "out.png", "output path")
 	flag.BoolVar(&noOut, "noout", false, "do not output image")
 	flag.BoolVar(&ignoreCfg, "ignorecfg", false, "ignorecfg")
@@ -40,6 +42,9 @@ func main() {
 	flag.Float64Var(&config.Config.LineWidth, "linewidth", config.DefaultConfig.LineWidth, "line width in pixels")
 	flag.IntVar(&config.Config.LineRes, "lineres", config.DefaultConfig.LineRes, "line res in steps")
 	flag.StringVar(&config.Config.Color, "color", config.DefaultConfig.Color, "draw color")
+	flag.BoolVar(&config.Config.HorizonLine, "horizonline", config.DefaultConfig.HorizonLine, "draw horizon line")
+	flag.Float64Var(&config.Config.HorizonLineWidth, "horizonlinewidth", config.DefaultConfig.HorizonLineWidth, "horizon line width")
+	flag.Float64Var(&config.Config.HorizonLinePadding, "horizonlinepadding", config.DefaultConfig.HorizonLinePadding, "horizon line padding")
 	flag.Parse()
 
 	/*you can do stuff like
@@ -52,7 +57,7 @@ func main() {
 
 	config.Init()
 
-	currTime := time.Now().Add(time.Hour * time.Duration(addHours))
+	currTime := time.Now().Add(time.Duration(float64(time.Hour) * addHours))
 	mp := suncalc.GetMoonPosition(currTime, config.Config.Lat, config.Config.Lon)
 	mi := suncalc.GetMoonIllumination(currTime)
 	visAngle := SignedAngleDiff(mi.Angle, mp.ParallacticAngle)
@@ -86,6 +91,23 @@ func main() {
 			dc.LineTo(currX, currY)
 		}
 		dc.Fill()
+
+		dc.SetLineWidth(config.Config.HorizonLineWidth)
+		dc.SetDash(5, 10)
+		frac := mp.Altitude / (moonRadius / mp.Distance / config.Config.MoonRad * float64(config.Config.ImageSize))
+		if (frac <= 1) && mp.Altitude >= 0 {
+			partFrac := (frac*float64(config.Config.ImageSize) - (float64(config.Config.ImageSize)/2 - config.Config.MoonRad)) / (2 * config.Config.MoonRad)
+			if partFrac >= 0 && partFrac <= 1 {
+				// two lines
+				y := math.Sqrt(1. - (partFrac-1./2.)*(partFrac-1./2.)*4.)
+				dc.DrawLine(config.Config.HorizonLinePadding, float64(config.Config.ImageSize)*(1-frac), float64(config.Config.ImageSize/2)-y*config.Config.MoonRad, float64(config.Config.ImageSize)*(1-frac))
+				dc.DrawLine(float64(config.Config.ImageSize)-config.Config.HorizonLinePadding, float64(config.Config.ImageSize)*(1-frac), float64(config.Config.ImageSize/2)+y*config.Config.MoonRad, float64(config.Config.ImageSize)*(1-frac))
+			} else {
+				// single line
+				dc.DrawLine(config.Config.HorizonLinePadding, float64(config.Config.ImageSize)*(1-frac), float64(config.Config.ImageSize)-config.Config.HorizonLinePadding, float64(config.Config.ImageSize)*(1-frac))
+			}
+		}
+		dc.Stroke()
 		dc.SavePNG(outPath)
 	}
 	fmt.Printf("∠ %0.2f°, θ %0.2f°", 180./math.Pi*mp.Altitude, 180+180./math.Pi*mp.Azimuth)
