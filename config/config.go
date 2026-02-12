@@ -21,6 +21,11 @@ type ConfigS struct {
 	HorizonLine        bool
 	HorizonLineWidth   float64
 	HorizonLinePadding float64
+	Meridians          bool
+	MeridianCount      int
+	Parallels          bool
+	ParallelCount      int
+	GeodesicsThickness float64
 	Color              string
 }
 
@@ -34,6 +39,11 @@ var DefaultConfig = ConfigS{
 	HorizonLine:        true,
 	HorizonLineWidth:   3.,
 	HorizonLinePadding: 10.,
+	Meridians:          false,
+	MeridianCount:      7,
+	Parallels:          false,
+	ParallelCount:      7,
+	GeodesicsThickness: 3.,
 	Color:              "#FFFFFF",
 }
 

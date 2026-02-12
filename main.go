@@ -39,6 +39,42 @@ func genImage(mp suncalc.MoonPosition, mi suncalc.MoonIllumination) *gg.Context 
 	dc.DrawCircle(float64(config.Config.ImageSize)/2, float64(config.Config.ImageSize)/2, config.Config.MoonRad)
 	dc.SetColor(config.OutColor)
 	dc.Stroke()
+	if config.Config.Parallels || config.Config.Meridians {
+		maskdc := gg.NewContext(config.Config.ImageSize, config.Config.ImageSize)
+		maskdc.SetLineWidth(config.Config.GeodesicsThickness)
+
+		if config.Config.Parallels {
+			for i := 0; i <= config.Config.ParallelCount; i++ {
+				phi := math.Pi * float64(i+1) / float64(config.Config.ParallelCount+2)
+				currX, currY := screenCoords(math.Cos(phi), math.Sin(phi)*math.Cos(0), visAngle)
+				maskdc.MoveTo(currX, currY)
+				for i := 0; i < config.Config.LineRes; i++ {
+					theta := math.Pi * float64(i+1) / float64(config.Config.LineRes)
+					currX, currY = screenCoords(math.Cos(phi), math.Sin(phi)*math.Cos(theta), visAngle)
+					maskdc.LineTo(currX, currY)
+				}
+				maskdc.Stroke()
+			}
+		}
+		if config.Config.Meridians {
+			for i := 0; i <= config.Config.MeridianCount; i++ {
+				theta := math.Pi * float64(i+1) / float64(config.Config.MeridianCount+2)
+				currX, currY := screenCoords(math.Cos(0), math.Sin(0)*math.Cos(theta), visAngle)
+				maskdc.MoveTo(currX, currY)
+				for i := 0; i < config.Config.LineRes; i++ {
+					phi := math.Pi * float64(i+1) / float64(config.Config.LineRes)
+					currX, currY = screenCoords(math.Cos(phi), math.Sin(phi)*math.Cos(theta), visAngle)
+					maskdc.LineTo(currX, currY)
+				}
+				maskdc.Stroke()
+			}
+		}
+
+		maskimg := maskdc.AsMask()
+		dc.SetMask(maskimg)
+		dc.InvertMask()
+	}
+
 	currX, currY := screenCoords(1, 0, visAngle)
 	dc.MoveTo(currX, currY)
 	for i := 0; i < config.Config.LineRes; i++ {
@@ -101,6 +137,11 @@ func main() {
 	flag.BoolVar(&config.Config.HorizonLine, "horizonline", config.DefaultConfig.HorizonLine, "draw horizon line")
 	flag.Float64Var(&config.Config.HorizonLineWidth, "horizonlinewidth", config.DefaultConfig.HorizonLineWidth, "horizon line width")
 	flag.Float64Var(&config.Config.HorizonLinePadding, "horizonlinepadding", config.DefaultConfig.HorizonLinePadding, "horizon line padding")
+	flag.BoolVar(&config.Config.Meridians, "meridians", config.DefaultConfig.Meridians, "draw meridians")
+	flag.BoolVar(&config.Config.Parallels, "parallels", config.DefaultConfig.Parallels, "draw parallels")
+	flag.Float64Var(&config.Config.GeodesicsThickness, "geodesicsthickness", config.DefaultConfig.GeodesicsThickness, "geodesics thickness")
+	flag.IntVar(&config.Config.MeridianCount, "meridiancount", config.DefaultConfig.MeridianCount, "meridian count")
+	flag.IntVar(&config.Config.ParallelCount, "parallelcount", config.DefaultConfig.ParallelCount, "parallel count")
 	flag.BoolVar(&runAsSrv, "server", false, "run as server")
 	flag.StringVar(&address, "hostname", ":8778", "server address")
 	flag.Parse()
