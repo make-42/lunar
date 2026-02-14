@@ -11,9 +11,39 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type ConfigS struct {
-	Lat                float64
-	Lon                float64
+type ColorsS struct {
+	Default              color.RGBA
+	CivilTwilight        color.RGBA
+	NauticalTwilight     color.RGBA
+	AstronomicalTwilight color.RGBA
+	GoldenHour           color.RGBA
+	Day                  color.RGBA
+	Night                color.RGBA
+}
+
+type ColorStrings struct {
+	Default              string
+	CivilTwilight        string
+	NauticalTwilight     string
+	AstronomicalTwilight string
+	GoldenHour           string
+	Day                  string
+	Night                string
+}
+
+type SolarS struct {
+	Width             int
+	Height            int
+	LineHeight        float64
+	LineWidth         float64
+	MarkerLineWidth   float64
+	SunPathLineWidth  float64
+	TimeTickLineWidth float64
+	TimeTickPeriod    int // hours
+	LineRes           int
+}
+
+type LunarS struct {
 	ImageSize          int
 	MoonRad            float64
 	LineWidth          float64
@@ -26,30 +56,58 @@ type ConfigS struct {
 	Parallels          bool
 	ParallelCount      int
 	GeodesicsThickness float64
-	Color              string
+}
+
+type ConfigS struct {
+	Lat    float64
+	Lon    float64
+	Lunar  LunarS
+	Solar  SolarS
+	Colors ColorStrings
 }
 
 var DefaultConfig = ConfigS{
-	Lat:                48.8,
-	Lon:                2.3,
-	ImageSize:          1024,
-	MoonRad:            400,
-	LineWidth:          10.,
-	LineRes:            100,
-	HorizonLine:        true,
-	HorizonLineWidth:   3.,
-	HorizonLinePadding: 10.,
-	Meridians:          false,
-	MeridianCount:      7,
-	Parallels:          false,
-	ParallelCount:      7,
-	GeodesicsThickness: 3.,
-	Color:              "#FFFFFF",
+	Lat: 48.8,
+	Lon: 2.3,
+	Lunar: LunarS{
+		ImageSize:          1024,
+		MoonRad:            400,
+		LineWidth:          10.,
+		LineRes:            100,
+		HorizonLine:        true,
+		HorizonLineWidth:   3.,
+		HorizonLinePadding: 10.,
+		Meridians:          false,
+		MeridianCount:      7,
+		Parallels:          false,
+		ParallelCount:      7,
+		GeodesicsThickness: 3.,
+	},
+	Solar: SolarS{
+		Width:             1024,
+		Height:            256,
+		LineHeight:        200,
+		LineWidth:         6.,
+		MarkerLineWidth:   4.,
+		SunPathLineWidth:  10.,
+		TimeTickLineWidth: 2.,
+		TimeTickPeriod:    2, // hours
+		LineRes:           150,
+	},
+	Colors: ColorStrings{
+		Default:              "#E6F0FF", // soft neutral fallback
+		Day:                  "#87CEEB", // clear sky blue
+		GoldenHour:           "#FFB347", // warm amber
+		CivilTwilight:        "#FF8C42", // orange-red glow
+		NauticalTwilight:     "#2F4F8F", // deep blue
+		AstronomicalTwilight: "#0B1D3A", // near-night blue
+		Night:                "#020617", // almost black, but not harsh
+	},
 }
 
 var Config = ConfigS{}
 
-var OutColor = color.RGBA{}
+var ParsedColors = ColorsS{}
 
 func ParseHexColor(s string) (c color.RGBA, err error) {
 	c.A = 0xff
@@ -102,7 +160,30 @@ func Init() {
 		decoder := yaml.NewDecoder(fh)
 		decoder.Decode(&Config)
 	}
-	OutColor, err = ParseHexColor(Config.Color)
+	parseAllColors()
+}
+
+func parseAllColors() {
+	cs := Config.Colors
+
+	var err error
+	ParsedColors.Default, err = ParseHexColor(cs.Default)
+	must(err)
+	ParsedColors.CivilTwilight, err = ParseHexColor(cs.CivilTwilight)
+	must(err)
+	ParsedColors.NauticalTwilight, err = ParseHexColor(cs.NauticalTwilight)
+	must(err)
+	ParsedColors.AstronomicalTwilight, err = ParseHexColor(cs.AstronomicalTwilight)
+	must(err)
+	ParsedColors.GoldenHour, err = ParseHexColor(cs.GoldenHour)
+	must(err)
+	ParsedColors.Day, err = ParseHexColor(cs.Day)
+	must(err)
+	ParsedColors.Night, err = ParseHexColor(cs.Night)
+	must(err)
+}
+
+func must(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
