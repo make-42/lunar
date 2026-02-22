@@ -37,6 +37,7 @@ type SolarS struct {
 	LineHeight        float64
 	LineWidth         float64
 	MarkerLineWidth   float64
+	MarkerCircleRadius float64
 	SunPathLineWidth  float64
 	TimeTickLineWidth float64
 	TimeTickPeriod    int // hours
@@ -89,6 +90,7 @@ var DefaultConfig = ConfigS{
 		LineHeight:        200,
 		LineWidth:         6.,
 		MarkerLineWidth:   4.,
+		MarkerCircleRadius: 8.,
 		SunPathLineWidth:  10.,
 		TimeTickLineWidth: 2.,
 		TimeTickPeriod:    2, // hours

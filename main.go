@@ -256,6 +256,9 @@ func genSolarImage(currTime time.Time) *gg.Context {
 		prevColor = nextColor
 	}
 	dc.Stroke()
+	dc.SetColor(config.ParsedColors.Default)
+	dc.DrawCircle(prevX,prevY,config.Config.Solar.MarkerCircleRadius)
+	dc.Fill()
 	return dc
 }
 
